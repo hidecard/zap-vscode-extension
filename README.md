@@ -11,7 +11,7 @@ The extension intentionally does not bundle the Zap compiler or runtime. It uses
 | Feature | Description |
 | --- | --- |
 | `.zp` language support | Registers `.zp` files as Zap source files. |
-| Syntax highlighting | Highlights comments, strings, numbers, declarations, keywords, types, constants, operators, and built-in commands such as `say` and `print`. |
+| Syntax highlighting | Highlights comments, strings, numbers, declarations, keywords, types, constants, operators, output commands such as `say` and `print`, and async task builtins such as `spawn`, `task_join`, and `task_is_ready`. |
 | Zap File Icons | Includes an optional `Zap File Icons` theme for `.zp` files in the Explorer. |
 | LSP completion | Uses the native Zap LSP with rich CompletionItem mapping and falls back to local Zap keywords, types, and the native stdlib builtin catalog when the LSP is unavailable. |
 | Signature help | Shows function signatures and active parameters while typing calls. |
@@ -49,7 +49,7 @@ npm test
 npm run package
 ```
 
-The package is written to `dist/zap-language-support-0.5.0.vsix`. Install that file with **Extensions: Install from VSIX...**.
+The package is written to `dist/zap-language-support-0.5.1.vsix`. Install that file with **Extensions: Install from VSIX...**.
 
 For development, use **Developer: Install Extension from Location...** and select the extension directory.
 
@@ -94,7 +94,7 @@ else:
     say "Disabled"
 ```
 
-The Zap language uses `.zp` source files. Common language constructs include `let`, typed annotations, `fn`, `if`/`else`, `for`, `while`, `async`/`await`, `class`, `module`, `import`, `try`/`catch`, `raise`, lists, maps, and Result/Option values. See the [Zap syntax guide](https://github.com/hidecard/zap/blob/main/docs/SYNTAX_GUIDE_EN.md) for the complete language reference.
+The Zap language uses `.zp` source files. Common language constructs include `let`, typed annotations, `fn`, `if`/`else`, `for`, `while`, `async`/`await`, `spawn`, `task_join`, `task_is_ready`, `class`, `module`, `import`, `try`/`catch`, `raise`, lists, maps, and Result/Option values. See the [Zap syntax guide](https://github.com/hidecard/zap/blob/main/docs/SYNTAX_GUIDE_EN.md) and [async LSP guide](https://github.com/hidecard/zap/blob/main/docs/ASYNC_LSP_EN.md) for the complete language and editor reference.
 
 ## Commands
 

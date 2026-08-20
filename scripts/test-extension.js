@@ -22,6 +22,11 @@ for (const relative of ['package.json', 'language-configuration.json', 'syntaxes
 }
 const extensionSource = fs.readFileSync(path.join(root, 'extension.js'), 'utf8');
 const lspSource = fs.readFileSync(path.join(root, 'lsp-client.js'), 'utf8');
+const grammar = JSON.parse(fs.readFileSync(path.join(root, 'syntaxes/zap.tmLanguage.json'), 'utf8'));
+const builtinPattern = grammar.repository.builtins.patterns[1].match;
+for (const builtin of ['spawn', 'task_join', 'task_is_ready']) {
+  if (!builtinPattern.includes(builtin)) throw new Error(`async builtin is missing from syntax grammar: ${builtin}`);
+}
 if (!lspSource.includes('Content-Length') || !lspSource.includes("request(method")) {
   throw new Error('LSP client framing or request transport is missing');
 }
@@ -49,8 +54,8 @@ for (const command of ['zap.formatFile', 'zap.lintFile', 'zap.buildWorkspace', '
 if (manifest.contributes.configuration.properties['zap.formatOnSave']?.default !== false) {
   throw new Error('formatOnSave must default to false');
 }
-if (manifest.version !== '0.5.0' || manifest.contributes.configuration.properties['zap.lspRequestTimeout']?.default !== 10000) {
-  throw new Error('0.5.0 metadata or LSP timeout setting is missing');
+if (manifest.version !== '0.5.1' || manifest.contributes.configuration.properties['zap.lspRequestTimeout']?.default !== 10000) {
+  throw new Error('0.5.1 metadata or LSP timeout setting is missing');
 }
 if (!extensionSource.includes('onWillSaveTextDocument') || !extensionSource.includes('workspace/symbol')) {
   throw new Error('save formatting or workspace symbol integration is missing');
@@ -62,7 +67,7 @@ const grammarSource = fs.readFileSync(path.join(root, 'syntaxes/zap.tmLanguage.j
 if (!grammarSource.includes('support.function.zap') || !grammarSource.includes('keyword.control.output.zap')) {
   throw new Error('Zap builtin or output-statement highlighting grammar is missing');
 }
-for (const builtin of ['read_text', 'from_json', 'http_serve_once', 'process_run']) {
+for (const builtin of ['read_text', 'from_json', 'http_serve_once', 'process_run', 'spawn', 'task_join', 'task_is_ready']) {
   if (!extensionSource.includes(`'${builtin}'`)) throw new Error(`missing stdlib completion: ${builtin}`);
 }
 console.log('Zap VS Code extension validation passed.');

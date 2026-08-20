@@ -1,8 +1,8 @@
 {
   "name": "zap-language-support",
   "displayName": "Zap Syntax and LSP",
-  "description": "Rich Zap language support for VS Code with syntax highlighting, stdlib-aware completion, LSP hover/definitions, formatting, diagnostics, snippets, and CLI workflows.",
-  "version": "0.5.0",
+  "description": "Rich Zap language support for VS Code with syntax highlighting, async task-aware completion, LSP hover/definitions, formatting, diagnostics, snippets, and CLI workflows.",
+  "version": "0.5.1",
   "publisher": "ArkarYan",
   "license": "MIT",
   "icon": "icons/zap-logo.png",

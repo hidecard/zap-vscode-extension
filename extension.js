@@ -23,7 +23,8 @@ const BUILTINS = [
   'json', 'from_json', 'json_parse', 'json_stringify', 'str', 'upper', 'lower', 'trim',
   'split', 'join', 'contains', 'replace', 'abs', 'min', 'max', 'pow', 'sum', 'keys',
   'count', 'reverse', 'range', 'url_parse', 'url_encode', 'url_decode', 'http_get',
-  'http_request', 'http_serve_once', 'process_run'
+  'http_request', 'http_serve_once', 'process_run',
+  'spawn', 'task_join', 'task_is_ready'
 ];
 
 function executable() {
