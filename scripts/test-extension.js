@@ -37,8 +37,11 @@ if (!extensionSource.includes('textDocument/formatting') || !extensionSource.inc
 if (!extensionSource.includes('zap.runFile') || !extensionSource.includes('zap.checkWorkspace')) {
   throw new Error('extension commands are not registered');
 }
+if (!extensionSource.includes('zap.restartLanguageServer') || !extensionSource.includes('toCompletionItem')) {
+  throw new Error('LSP restart or rich completion mapping is missing');
+}
 const manifest = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
-for (const command of ['zap.formatFile', 'zap.lintFile', 'zap.buildWorkspace', 'zap.testWorkspace']) {
+for (const command of ['zap.formatFile', 'zap.lintFile', 'zap.buildWorkspace', 'zap.testWorkspace', 'zap.restartLanguageServer']) {
   if (!manifest.contributes.commands.some(item => item.command === command)) {
     throw new Error(`missing contributed command: ${command}`);
   }
@@ -46,13 +49,20 @@ for (const command of ['zap.formatFile', 'zap.lintFile', 'zap.buildWorkspace', '
 if (manifest.contributes.configuration.properties['zap.formatOnSave']?.default !== false) {
   throw new Error('formatOnSave must default to false');
 }
+if (manifest.version !== '0.5.0' || manifest.contributes.configuration.properties['zap.lspRequestTimeout']?.default !== 10000) {
+  throw new Error('0.5.0 metadata or LSP timeout setting is missing');
+}
 if (!extensionSource.includes('onWillSaveTextDocument') || !extensionSource.includes('workspace/symbol')) {
   throw new Error('save formatting or workspace symbol integration is missing');
 }
 if (manifest.icon !== 'icons/zap-logo.png' || !manifest.contributes.iconThemes?.some(theme => theme.path === './icons/zap-file-icon-theme.json')) {
   throw new Error('logo or Zap file icon theme is not contributed');
 }
-if (!fs.readFileSync(path.join(root, 'syntaxes/zap.tmLanguage.json'), 'utf8').includes('support.function.zap')) {
-  throw new Error('Zap builtin highlighting grammar is missing');
+const grammarSource = fs.readFileSync(path.join(root, 'syntaxes/zap.tmLanguage.json'), 'utf8');
+if (!grammarSource.includes('support.function.zap') || !grammarSource.includes('keyword.control.output.zap')) {
+  throw new Error('Zap builtin or output-statement highlighting grammar is missing');
+}
+for (const builtin of ['read_text', 'from_json', 'http_serve_once', 'process_run']) {
+  if (!extensionSource.includes(`'${builtin}'`)) throw new Error(`missing stdlib completion: ${builtin}`);
 }
 console.log('Zap VS Code extension validation passed.');

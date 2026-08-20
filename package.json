@@ -1,8 +1,8 @@
 {
   "name": "zap-language-support",
   "displayName": "Zap Syntax and LSP",
-  "description": "Syntax highlighting, LSP completion, signature help, hover, definitions, formatting, diagnostics, and run support for the Zap programming language.",
-  "version": "0.4.0",
+  "description": "Rich Zap language support for VS Code with syntax highlighting, stdlib-aware completion, LSP hover/definitions, formatting, diagnostics, snippets, and CLI workflows.",
+  "version": "0.5.0",
   "publisher": "ArkarYan",
   "license": "MIT",
   "icon": "icons/zap-logo.png",
@@ -31,6 +31,7 @@
     "onCommand:zap.runFile",
     "onCommand:zap.checkWorkspace",
     "onCommand:zap.restartDiagnostics",
+    "onCommand:zap.restartLanguageServer",
     "onCommand:zap.formatFile",
     "onCommand:zap.lintFile",
     "onCommand:zap.buildWorkspace",
@@ -88,6 +89,11 @@
         "icon": "$(refresh)"
       },
       {
+        "command": "zap.restartLanguageServer",
+        "title": "Zap: Restart Language Server",
+        "icon": "$(sync)"
+      },
+      {
         "command": "zap.formatFile",
         "title": "Zap: Format Current File",
         "icon": "$(symbol-misc)"
@@ -132,6 +138,9 @@
         },
         {
           "command": "zap.restartDiagnostics"
+        },
+        {
+          "command": "zap.restartLanguageServer"
         },
         {
           "command": "zap.formatFile"
@@ -181,6 +190,13 @@
           "type": "boolean",
           "default": false,
           "description": "Run `zap fmt` automatically when saving a Zap file."
+        },
+        "zap.lspRequestTimeout": {
+          "type": "number",
+          "default": 10000,
+          "minimum": 1000,
+          "maximum": 60000,
+          "description": "Maximum time in milliseconds to wait for a Zap LSP request."
         }
       }
     }

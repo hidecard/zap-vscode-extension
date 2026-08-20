@@ -10,6 +10,7 @@ class ZapLspClient {
     this.onExit = onExit;
     this.nextId = 1;
     this.pending = new Map();
+    this.requestTimeout = vscode.workspace.getConfiguration('zap').get('lspRequestTimeout', 10000);
     this.buffer = Buffer.alloc(0);
     this.started = false;
     this.process = cp.spawn(command, ['lsp'], { cwd, windowsHide: true, stdio: ['pipe', 'pipe', 'pipe'] });
@@ -83,7 +84,15 @@ class ZapLspClient {
         reject(new Error('Zap LSP is not available'));
         return;
       }
-      this.pending.set(id, { resolve, reject });
+      const timer = setTimeout(() => {
+        if (!this.pending.has(id)) return;
+        this.pending.delete(id);
+        reject(new Error(`Zap LSP request timed out: ${method}`));
+      }, this.requestTimeout);
+      this.pending.set(id, {
+        resolve: value => { clearTimeout(timer); resolve(value); },
+        reject: error => { clearTimeout(timer); reject(error); }
+      });
       this.send({ jsonrpc: '2.0', id, method, params });
     });
   }

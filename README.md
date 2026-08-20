@@ -13,7 +13,7 @@ The extension intentionally does not bundle the Zap compiler or runtime. It uses
 | `.zp` language support | Registers `.zp` files as Zap source files. |
 | Syntax highlighting | Highlights comments, strings, numbers, declarations, keywords, types, constants, operators, and built-in commands such as `say` and `print`. |
 | Zap File Icons | Includes an optional `Zap File Icons` theme for `.zp` files in the Explorer. |
-| LSP completion | Uses the native Zap LSP for workspace-aware completion and falls back to local keywords, types, and built-ins when the LSP is unavailable. |
+| LSP completion | Uses the native Zap LSP with rich CompletionItem mapping and falls back to local Zap keywords, types, and the native stdlib builtin catalog when the LSP is unavailable. |
 | Signature help | Shows function signatures and active parameters while typing calls. |
 | Hover and definitions | Provides hover information and Go to Definition through the Zap LSP. |
 | Workspace symbols | Makes Zap declarations searchable from VS Code symbol search. |
@@ -49,7 +49,7 @@ npm test
 npm run package
 ```
 
-The package is written to `dist/zap-language-support-0.3.0.vsix`. Install that file with **Extensions: Install from VSIX...**.
+The package is written to `dist/zap-language-support-0.5.0.vsix`. Install that file with **Extensions: Install from VSIX...**.
 
 For development, use **Developer: Install Extension from Location...** and select the extension directory.
 
@@ -105,6 +105,7 @@ The following commands are available from the Command Palette:
 | **Zap: Run Current File** | Runs the active file with `zap run <file>`. |
 | **Zap: Check Workspace** | Runs `zap check --json <workspace>`. Requires `zap.toml`. |
 | **Zap: Restart Diagnostics** | Clears and refreshes the current diagnostics. |
+| **Zap: Restart Language Server** | Stops and starts the native Zap LSP, then reopens active Zap documents. |
 | **Zap: Format Current File** | Requests formatting edits from the Zap LSP. |
 | **Zap: Lint Current File** | Runs `zap lint <file>`. |
 | **Zap: Build Workspace** | Runs `zap build <workspace>`. |
@@ -121,7 +122,8 @@ The Run command uses the integrated terminal by default. Disable `zap.runInTermi
   "zap.enableDiagnostics": true,
   "zap.diagnosticDelay": 350,
   "zap.runInTerminal": true,
-  "zap.formatOnSave": false
+  "zap.formatOnSave": false,
+  "zap.lspRequestTimeout": 10000
 }
 ```
 
@@ -133,6 +135,7 @@ The Run command uses the integrated terminal by default. Disable `zap.runInTermi
 | `zap.diagnosticDelay` | `350` | Debounce delay in milliseconds for CLI diagnostics after edits. |
 | `zap.runInTerminal` | `true` | Runs files in the integrated terminal instead of the Output channel. |
 | `zap.formatOnSave` | `false` | Applies LSP formatting edits before saving Zap files. |
+| `zap.lspRequestTimeout` | `10000` | Maximum wait time in milliseconds for a native LSP request. |
 
 ## LSP integration
 
@@ -148,7 +151,7 @@ The extension starts `zap lsp` as a stdio JSON-RPC server and synchronizes opene
 - `workspace/symbol`.
 - `textDocument/publishDiagnostics`.
 
-References, symbol rename, code actions, semantic tokens, and document symbols are not exposed until the native Zap LSP implements the corresponding protocol methods.
+The extension also provides a manual **Zap: Restart Language Server** command and request timeouts so a stalled native server does not leave completion or hover requests pending. References, symbol rename, code actions, semantic tokens, and document symbols are not exposed until the native Zap LSP implements the corresponding protocol methods.
 
 ## Development and validation
 

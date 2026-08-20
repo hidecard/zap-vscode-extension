@@ -18,9 +18,12 @@ const KEYWORDS = [
 const TYPES = ['any', 'bool', 'future', 'list', 'map', 'none', 'number', 'option', 'result', 'set', 'text', 'unknown'];
 const BUILTINS = [
   'say', 'print', 'len', 'type', 'range', 'enumerate', 'zip', 'map', 'filter', 'reduce',
-  'now', 'sleep', 'has_env', 'env', 'path_join', 'basename', 'dirname', 'json_parse',
-  'json_stringify', 'url_parse', 'url_encode', 'url_decode', 'http_get', 'http_request',
-  'process_run'
+  'now', 'sleep', 'has_env', 'env', 'env_get', 'config_dir', 'config_path',
+  'path_join', 'basename', 'dirname', 'read_text', 'write_text', 'read_lines', 'write_lines',
+  'json', 'from_json', 'json_parse', 'json_stringify', 'str', 'upper', 'lower', 'trim',
+  'split', 'join', 'contains', 'replace', 'abs', 'min', 'max', 'pow', 'sum', 'keys',
+  'count', 'reverse', 'range', 'url_parse', 'url_encode', 'url_decode', 'http_get',
+  'http_request', 'http_serve_once', 'process_run'
 ];
 
 function executable() {
@@ -220,7 +223,7 @@ function lspDiagnostics(params) {
     const diagnostic = new vscode.Diagnostic(
       new vscode.Range(start.line, start.character, end.line, end.character),
       item.message || 'Zap diagnostic',
-      item.severity === 1 ? vscode.DiagnosticSeverity.Error : vscode.DiagnosticSeverity.Warning
+      diagnosticSeverity(item.severity)
     );
     diagnostic.source = item.source || 'zap-lsp';
     return diagnostic;
@@ -255,17 +258,16 @@ function activate(context) {
     const editor = vscode.window.activeTextEditor;
     if (editor) refreshDiagnostics(editor.document);
   }));
+  context.subscriptions.push(vscode.commands.registerCommand('zap.restartLanguageServer', () => {
+    restartLanguageServer(context);
+  }));
   context.subscriptions.push(vscode.languages.registerCompletionItemProvider('zap', {
     provideCompletionItems(document, position) {
       if (lspClient && lspClient.started) {
         return lspClient.request('textDocument/completion', {
           textDocument: { uri: document.uri.toString() },
           position: { line: position.line, character: position.character }
-        }).then(result => (result?.items || []).map(value => {
-          const completion = item(value.label, vscode.CompletionItemKind.Text);
-          completion.detail = value.detail || 'Zap LSP';
-          return completion;
-        })).catch(() => localCompletions());
+        }).then(result => (result?.items || []).map(toCompletionItem)).catch(() => localCompletions());
       }
       return localCompletions();
     }
@@ -390,9 +392,63 @@ function item(label, kind) {
   return completion;
 }
 
+function restartLanguageServer(context) {
+  if (lspClient) lspClient.stop();
+  lspClient = undefined;
+  startLsp(context);
+  for (const document of vscode.workspace.textDocuments) {
+    if (document.languageId === 'zap' && lspClient) lspClient.open(document);
+  }
+  vscode.window.showInformationMessage('Zap Language Server restarted.');
+}
+
+function diagnosticSeverity(severity) {
+  switch (severity) {
+    case 1: return vscode.DiagnosticSeverity.Error;
+    case 3: return vscode.DiagnosticSeverity.Information;
+    case 4: return vscode.DiagnosticSeverity.Hint;
+    default: return vscode.DiagnosticSeverity.Warning;
+  }
+}
+
+function completionKind(kind) {
+  const map = {
+    1: vscode.CompletionItemKind.Text,
+    2: vscode.CompletionItemKind.Method,
+    3: vscode.CompletionItemKind.Function,
+    4: vscode.CompletionItemKind.Constructor,
+    5: vscode.CompletionItemKind.Field,
+    6: vscode.CompletionItemKind.Variable,
+    7: vscode.CompletionItemKind.Class,
+    9: vscode.CompletionItemKind.Module,
+    10: vscode.CompletionItemKind.Property,
+    14: vscode.CompletionItemKind.Keyword,
+    17: vscode.CompletionItemKind.Value,
+    18: vscode.CompletionItemKind.Enum,
+    19: vscode.CompletionItemKind.Interface,
+    21: vscode.CompletionItemKind.Struct,
+    22: vscode.CompletionItemKind.Event,
+    25: vscode.CompletionItemKind.TypeParameter
+  };
+  return map[kind] || vscode.CompletionItemKind.Text;
+}
+
+function toCompletionItem(value) {
+  const completion = item(value.label || value.insertText || '', completionKind(value.kind));
+  completion.detail = value.detail || 'Zap LSP';
+  if (value.documentation) completion.documentation = typeof value.documentation === 'string'
+    ? new vscode.MarkdownString(value.documentation)
+    : new vscode.MarkdownString(value.documentation.value || '');
+  if (value.insertText) completion.insertText = value.insertText;
+  if (value.sortText) completion.sortText = value.sortText;
+  if (value.filterText) completion.filterText = value.filterText;
+  return completion;
+}
+
 function deactivate() {
   clearTimeout(diagnosticTimer);
+  if (lspClient) lspClient.stop();
   diagnosticCollection.dispose();
 }
 
-module.exports = { activate, deactivate, parseJsonDiagnostic, lspDiagnostics };
+module.exports = { activate, deactivate, parseJsonDiagnostic, lspDiagnostics, completionKind };

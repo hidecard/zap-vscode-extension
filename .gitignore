@@ -1,3 +1,8 @@
 node_modules/
+dist/
 .DS_Store
 *.log
+
+# Local VS Code and OS files
+.vscode/
+Thumbs.db

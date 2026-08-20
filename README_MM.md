@@ -9,7 +9,7 @@
 | `.zp` language support | `.zp` file များကို Zap source file အဖြစ် မှတ်ပုံတင်ခြင်း |
 | Syntax highlighting | comment၊ string၊ number၊ declaration၊ keyword၊ type၊ constant၊ operator နှင့် `say`/`print` ကဲ့သို့ built-in command များကို highlight ပြခြင်း |
 | Zap File Icons | Explorer ထဲရှိ `.zp` file များအတွက် `Zap File Icons` theme အသုံးပြုနိုင်ခြင်း |
-| LSP completion | Native Zap LSP မှ workspace-aware completion ရယူပြီး LSP မရလျှင် local keyword၊ type နှင့် builtin များဖြင့် fallback လုပ်ခြင်း |
+| LSP completion | Native Zap LSP ၏ CompletionItem များကို rich mapping ဖြင့်အသုံးပြုပြီး LSP မရလျှင် Zap keyword၊ type နှင့် native stdlib builtin catalog များဖြင့် fallback လုပ်ခြင်း |
 | Signature help | Function call ရေးနေစဉ် function signature နှင့် လက်ရှိ parameter ကို ပြခြင်း |
 | Hover နှင့် definition | Hover information နှင့် Go to Definition ကို Zap LSP ဖြင့် အသုံးပြုနိုင်ခြင်း |
 | Workspace symbols | VS Code symbol search မှ Zap declaration များကို ရှာဖွေနိုင်ခြင်း |
@@ -41,7 +41,7 @@ npm test
 npm run package
 ```
 
-Package ဖိုင်သည် `dist/zap-language-support-0.3.0.vsix` တွင် ထွက်လာပါမည်။ ထိုဖိုင်ကို **Extensions: Install from VSIX...** ဖြင့် install လုပ်ပါ။ Development အတွက် **Developer: Install Extension from Location...** ကို run ပြီး extension directory ကို ရွေးပါ။
+Package ဖိုင်သည် `dist/zap-language-support-0.5.0.vsix` တွင် ထွက်လာပါမည်။ ထိုဖိုင်ကို **Extensions: Install from VSIX...** ဖြင့် install လုပ်ပါ။ Development အတွက် **Developer: Install Extension from Location...** ကို run ပြီး extension directory ကို ရွေးပါ။
 
 ## `.zp` File Icon ပြရန်
 
@@ -91,6 +91,7 @@ Zap language တွင် `let`၊ typed annotation၊ `fn`၊ `if`/`else`၊ `f
 | **Zap: Run Current File** | Active file ကို `zap run <file>` ဖြင့် run ပါသည်။ |
 | **Zap: Check Workspace** | `zap check --json <workspace>` ဖြင့် စစ်ဆေးပါသည်။ `zap.toml` လိုအပ်ပါသည်။ |
 | **Zap: Restart Diagnostics** | Diagnostics များကို ဖျက်ပြီး ပြန် refresh လုပ်ပါသည်။ |
+| **Zap: Restart Language Server** | Native Zap LSP ကို ရပ်ပြီး ပြန်စတင်ကာ ဖွင့်ထားသည့် `.zp` files များကို ပြန်ချိတ်ပါသည်။ |
 | **Zap: Format Current File** | Zap LSP ထံမှ formatting edits ရယူပြီး apply လုပ်ပါသည်။ |
 | **Zap: Lint Current File** | `zap lint <file>` ကို run ပါသည်။ |
 | **Zap: Build Workspace** | `zap build <workspace>` ကို run ပါသည်။ |
@@ -107,7 +108,8 @@ Zap language တွင် `let`၊ typed annotation၊ `fn`၊ `if`/`else`၊ `f
   "zap.enableDiagnostics": true,
   "zap.diagnosticDelay": 350,
   "zap.runInTerminal": true,
-  "zap.formatOnSave": false
+  "zap.formatOnSave": false,
+  "zap.lspRequestTimeout": 10000
 }
 ```
 
@@ -119,12 +121,13 @@ Zap language တွင် `let`၊ typed annotation၊ `fn`၊ `if`/`else`၊ `f
 | `zap.diagnosticDelay` | `350` | Edit ပြီးနောက် diagnostics ပြန်စစ်မည့် debounce delay ကို milliseconds ဖြင့် သတ်မှတ်ခြင်း |
 | `zap.runInTerminal` | `true` | File run output ကို integrated terminal သို့ ပို့ခြင်း |
 | `zap.formatOnSave` | `false` | Zap file save မလုပ်မီ LSP formatting edits များကို apply လုပ်ခြင်း |
+| `zap.lspRequestTimeout` | `10000` | Native LSP request တစ်ခုအတွက် စောင့်မည့်အများဆုံး milliseconds |
 
 ## LSP Integration
 
 Extension သည် `zap lsp` ကို stdio JSON-RPC server အဖြစ် စတင်ပြီး ဖွင့်ထားသော၊ ပြောင်းလဲထားသော၊ ပိတ်လိုက်သော `.zp` document များကို server နှင့် synchronize လုပ်ပါသည်။ လက်ရှိအသုံးပြုသည့် capability များမှာ `initialize`၊ `textDocument/didOpen`၊ `didChange`၊ `didClose`၊ `completion`၊ `signatureHelp`၊ `hover`၊ `definition`၊ `formatting`၊ `workspace/symbol` နှင့် `publishDiagnostics` တို့ ဖြစ်ပါသည်။
 
-Native Zap LSP တွင် သက်ဆိုင်ရာ protocol method များ မထည့်သေးသရွေ့ References၊ Symbol Rename၊ Code Actions၊ Semantic Tokens နှင့် Document Symbols များကို extension မှ မဖော်ပြနိုင်သေးပါ။
+Extension တွင် **Zap: Restart Language Server** command နှင့် LSP request timeout ပါဝင်သောကြောင့် server တုံ့ပြန်မှုရပ်နေသည့်အခါ completion/hover request များ pending အဖြစ် မကျန်တော့ပါ။ Native Zap LSP တွင် သက်ဆိုင်ရာ protocol method များ မထည့်သေးသရွေ့ References၊ Symbol Rename၊ Code Actions၊ Semantic Tokens နှင့် Document Symbols များကို extension မှ မဖော်ပြနိုင်သေးပါ။
 
 ## Development နှင့် Validation
 
