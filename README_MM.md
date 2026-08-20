@@ -22,9 +22,9 @@
 
 ## Snippets
 
-`.zp` file တစ်ခုဖွင့်ပြီး `say`၊ `fn`၊ `asyncfn`၊ `ifelse`၊ `try`၊ `spawn`၊ `taskjoin`၊ `assert` သို့မဟုတ် `main` ကဲ့သို့ prefix ကို ရိုက်ပြီး **Tab** နှိပ်ပါ၊ သို့မဟုတ် completion item ကို ရွေးပါ။ Template တိုင်းတွင် VS Code tab stop နှင့် placeholder များပါသဖြင့် name၊ type၊ expression နှင့် block body များကို မြန်မြန်ဖြည့်နိုင်ပါသည်။ Output snippet များသည် Zap ၏ canonical `say` statement ကိုသာ အသုံးပြုပါသည်။
+`.zp` file တစ်ခုဖွင့်ပြီး `say`၊ `let`၊ `fn`၊ `asyncfn`၊ `ifelse`၊ `forrange`၊ `try`၊ `spawn`၊ `taskjoin`၊ `return`၊ `list`၊ `map`၊ `jsonencode`၊ `readfile`၊ `httpget`၊ `resultif` သို့မဟုတ် `main` ကဲ့သို့ prefix ကို ရိုက်ပြီး **Tab** နှိပ်ပါ၊ သို့မဟုတ် completion item ကို ရွေးပါ။ Template တိုင်းတွင် VS Code tab stop နှင့် placeholder များပါသဖြင့် name၊ type၊ expression နှင့် block body များကို မြန်မြန်ဖြည့်နိုင်ပါသည်။ Output snippet များသည် Zap ၏ canonical `say` statement ကိုသာ အသုံးပြုပါသည်။
 
-Project အလိုက် ကိုယ်ပိုင် snippet ထည့်လိုပါက [`examples/zap-custom.code-snippets`](examples/zap-custom.code-snippets) ကို project ထဲရှိ `.vscode/zap.code-snippets` အဖြစ် copy လုပ်ပါ။ JSON file ကို ပြင်ပြီး project-specific `scope`၊ prefix နှင့် template အသစ်များကို extension source မပြင်ဘဲ ထည့်နိုင်ပါသည်။ Template ထဲတွင် API၊ async worker၊ test နှင့် logging example များ ပါဝင်ပါသည်။
+Project အလိုက် ကိုယ်ပိုင် snippet ထည့်လိုပါက [`examples/zap-custom.code-snippets`](examples/zap-custom.code-snippets) ကို project ထဲရှိ `.vscode/zap.code-snippets` အဖြစ် copy လုပ်ပါ။ JSON file ကို ပြင်ပြီး project-specific `scope`၊ prefix နှင့် template အသစ်များကို extension source မပြင်ဘဲ ထည့်နိုင်ပါသည်။ Template ထဲတွင် API၊ async worker၊ test နှင့် logging example များ ပါဝင်ပါသည်။ Built-in catalog တွင် return/control-flow၊ typed/default-argument function၊ nested function၊ collection၊ JSON၊ filesystem၊ environment၊ HTTP နှင့် Result/Option workflow များလည်း ပါဝင်ပါသည်။
 
 ## လိုအပ်ချက်များ
 

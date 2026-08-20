@@ -26,9 +26,9 @@ The extension intentionally does not bundle the Zap compiler or runtime. It uses
 
 ## Snippets
 
-Open a `.zp` file and type a snippet prefix such as `say`, `fn`, `asyncfn`, `ifelse`, `try`, `spawn`, `taskjoin`, `assert`, or `main`, then press **Tab** or choose the completion item. Every template uses VS Code tab stops and placeholders so you can move through names, types, expressions, and block bodies quickly. Output snippets use Zap's canonical `say` statement.
+Open a `.zp` file and type a snippet prefix such as `say`, `let`, `fn`, `asyncfn`, `ifelse`, `forrange`, `try`, `spawn`, `taskjoin`, `return`, `list`, `map`, `jsonencode`, `readfile`, `httpget`, `resultif`, or `main`, then press **Tab** or choose the completion item. Every template uses VS Code tab stops and placeholders so you can move through names, types, expressions, and block bodies quickly. Output snippets use Zap's canonical `say` statement.
 
-For project-specific templates, copy [`examples/zap-custom.code-snippets`](examples/zap-custom.code-snippets) into your project as `.vscode/zap.code-snippets`. You can then edit the JSON, add a project-specific `scope`, and create new prefixes without modifying the extension. The template includes API, async worker, test, and logging examples.
+For project-specific templates, copy [`examples/zap-custom.code-snippets`](examples/zap-custom.code-snippets) into your project as `.vscode/zap.code-snippets`. You can then edit the JSON, add a project-specific `scope`, and create new prefixes without modifying the extension. The template includes API, async worker, test, and logging examples. The built-in catalog also covers return/control-flow statements, typed/default-argument functions, nested functions, collection literals and iteration, JSON, filesystem, environment, HTTP, and Result/Option workflows.
 
 ## Requirements
 

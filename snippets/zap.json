@@ -119,6 +119,106 @@
     "body": ["if task_is_ready(${1:task}):", "    ${0:say(\"ready\")}"],
     "description": "Check whether a Zap task is ready"
   },
+  "Return value": {
+    "prefix": "return",
+    "body": ["return ${0:value}"],
+    "description": "Return a value from a Zap function"
+  },
+  "Break loop": {
+    "prefix": "break",
+    "body": ["break"],
+    "description": "Stop the current Zap loop"
+  },
+  "Continue loop": {
+    "prefix": "continue",
+    "body": ["continue"],
+    "description": "Continue with the next Zap loop iteration"
+  },
+  "Assignment": {
+    "prefix": "assign",
+    "body": ["${1:name} = ${0:value}"],
+    "description": "Assign a new value to an existing Zap binding"
+  },
+  "Typed function parameters": {
+    "prefix": "fntyped",
+    "body": ["fn ${1:name}(${2:value}: ${3:text}) -> ${4:none}:", "    ${0:pass}"],
+    "description": "Create a function with typed parameters"
+  },
+  "Function with defaults": {
+    "prefix": "fndefault",
+    "body": ["fn ${1:greet}(name: text = ${2:\"World\"}, punctuation: text = ${3:\"!\"}):", "    ${0:say(name + punctuation)}"],
+    "description": "Create a function with default arguments"
+  },
+  "Nested function": {
+    "prefix": "nestedfn",
+    "body": ["fn ${1:outer}(${2:input}):", "    fn ${3:inner}(${4:value}):", "        ${5:return ${4:value}}", "    ${0:return ${3:inner}(${2:input})}"],
+    "description": "Create a nested Zap function"
+  },
+  "List literal": {
+    "prefix": "list",
+    "body": ["let ${1:items} = [${2:item1}, ${3:item2}]", "${0}"],
+    "description": "Create a Zap list value"
+  },
+  "Map literal": {
+    "prefix": "map",
+    "body": ["let ${1:record} = {\"${2:key}\": ${3:value}}", "${0}"],
+    "description": "Create a Zap map value"
+  },
+  "Range loop": {
+    "prefix": "forrange",
+    "body": ["for ${1:index} in range(${2:count}):", "    ${0:say(${1:index})}"],
+    "description": "Loop over a numeric Zap range"
+  },
+  "Collection iteration": {
+    "prefix": "foreach",
+    "body": ["for ${1:item} in ${2:items}:", "    ${0:say(${1:item})}"],
+    "description": "Iterate over a collection and use each item"
+  },
+  "JSON encode": {
+    "prefix": "jsonencode",
+    "body": ["let ${1:text} = json(${2:value})", "${0:say(${1:text})}"],
+    "description": "Serialize a Zap value to JSON"
+  },
+  "JSON decode": {
+    "prefix": "jsondecode",
+    "body": ["let ${1:value} = from_json(${2:text})", "${0}"],
+    "description": "Decode JSON text into a Zap value"
+  },
+  "Read text file": {
+    "prefix": "readfile",
+    "body": ["let ${1:content} = read_text(${2:path})", "${0:say(${1:content})}"],
+    "description": "Read a text file with Zap"
+  },
+  "Write text file": {
+    "prefix": "writefile",
+    "body": ["write_text(${1:path}, ${2:content})", "${0}"],
+    "description": "Write text to a file with Zap"
+  },
+  "Environment variable": {
+    "prefix": "envget",
+    "body": ["let ${1:value} = env_get(${2:\"NAME\"})", "${0}"],
+    "description": "Read an environment variable"
+  },
+  "HTTP GET": {
+    "prefix": "httpget",
+    "body": ["let ${1:response} = http_get(${2:\"https://example.com\"})", "${0:say(${1:response})}"],
+    "description": "Send an HTTP GET request"
+  },
+  "HTTP request": {
+    "prefix": "httprequest",
+    "body": ["let ${1:response} = http_request(${2:\"GET\"}, ${3:\"https://example.com\"}, ${4:{}})", "${0:say(${1:response})}"],
+    "description": "Create a general HTTP request"
+  },
+  "Option fallback": {
+    "prefix": "unwrapor",
+    "body": ["let ${1:value} = unwrap_or(${2:option}, ${3:default_value})", "${0}"],
+    "description": "Unwrap an Option with a fallback value"
+  },
+  "Result handling": {
+    "prefix": "resultif",
+    "body": ["if is_ok(${1:result}):", "    let ${2:value} = unwrap(${1:result})", "    ${3:say(${2:value})}", "else:", "    ${0:say(\"operation failed\")}"],
+    "description": "Handle a Zap Result with success and failure branches"
+  },
   "Main entry": {
     "prefix": "main",
     "body": ["fn main() -> none:", "    ${0:say(\"Hello, Zap!\")}"],

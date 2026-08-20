@@ -46,11 +46,14 @@ if (!extensionSource.includes('textDocument/formatting') || !extensionSource.inc
 }
 const snippets = JSON.parse(fs.readFileSync(path.join(root, 'snippets/zap.json'), 'utf8'));
 const customSnippets = JSON.parse(fs.readFileSync(path.join(root, 'examples/zap-custom.code-snippets'), 'utf8'));
-for (const prefix of ['say', 'fn', 'asyncfn', 'ifelse', 'try', 'spawn', 'taskjoin', 'assert', 'main']) {
+for (const prefix of ['say', 'fn', 'asyncfn', 'ifelse', 'try', 'spawn', 'taskjoin', 'assert', 'main', 'return', 'break', 'continue', 'assign', 'fntyped', 'fndefault', 'nestedfn', 'list', 'map', 'forrange', 'foreach', 'jsonencode', 'jsondecode', 'readfile', 'writefile', 'envget', 'httpget', 'httprequest', 'unwrapor', 'resultif']) {
   if (!Object.values(snippets).some(snippet => snippet.prefix === prefix)) throw new Error(`missing built-in snippet: ${prefix}`);
 }
 if (!Object.values(snippets).find(snippet => snippet.prefix === 'say')?.body.join(' ').includes('say')) {
   throw new Error('say snippet must use canonical Zap output syntax');
+}
+if (Object.values(snippets).length < 40) {
+  throw new Error('expanded built-in snippet catalog is incomplete');
 }
 if (!Object.values(customSnippets).some(snippet => snippet.prefix === 'api_fn')) {
   throw new Error('custom snippet template is missing');
@@ -73,8 +76,8 @@ for (const command of ['zap.formatFile', 'zap.lintFile', 'zap.buildWorkspace', '
 if (manifest.contributes.configuration.properties['zap.formatOnSave']?.default !== false) {
   throw new Error('formatOnSave must default to false');
 }
-if (manifest.version !== '0.7.0' || manifest.contributes.configuration.properties['zap.lspRequestTimeout']?.default !== 10000) {
-  throw new Error('0.7.0 metadata or LSP timeout setting is missing');
+if (manifest.version !== '0.8.0' || manifest.contributes.configuration.properties['zap.lspRequestTimeout']?.default !== 10000) {
+  throw new Error('0.8.0 metadata or LSP timeout setting is missing');
 }
 if (!extensionSource.includes('onWillSaveTextDocument') || !extensionSource.includes('workspace/symbol')) {
   throw new Error('save formatting or workspace symbol integration is missing');
