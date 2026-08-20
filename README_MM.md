@@ -7,7 +7,7 @@
 | အင်္ဂါရပ် | ရှင်းလင်းချက် |
 | --- | --- |
 | `.zp` language support | `.zp` file များကို Zap source file အဖြစ် မှတ်ပုံတင်ခြင်း |
-| Syntax highlighting | comment၊ string၊ number၊ declaration၊ keyword၊ type၊ constant၊ operator၊ `say`/`print` output command နှင့် `spawn`၊ `task_join`၊ `task_is_ready` async task builtin များကို highlight ပြခြင်း |
+| Syntax highlighting | comment၊ string၊ number၊ declaration၊ keyword၊ type၊ constant၊ operator၊ canonical `say` output command နှင့် `spawn`၊ `task_join`၊ `task_is_ready` async task builtin များကို highlight ပြခြင်း |
 | Zap File Icons | Explorer ထဲရှိ `.zp` file များအတွက် `Zap File Icons` theme အသုံးပြုနိုင်ခြင်း |
 | LSP completion | Native Zap LSP ၏ CompletionItem များကို rich mapping ဖြင့်အသုံးပြုပြီး LSP မရလျှင် Zap keyword၊ type နှင့် native stdlib builtin catalog များဖြင့် fallback လုပ်ခြင်း |
 | Signature help | Function call ရေးနေစဉ် function signature နှင့် လက်ရှိ parameter ကို ပြခြင်း |
@@ -16,6 +16,7 @@
 | Formatting | **Format Document** နှင့် **Zap: Format Current File** ကို LSP မှတစ်ဆင့် အသုံးပြုနိုင်ခြင်း |
 | Format on save | Save လုပ်ချိန်တွင် Zap file ကို အလိုအလျောက် format လုပ်နိုင်ခြင်း |
 | Diagnostics | Native LSP diagnostics နှင့် `zap check --json` project diagnostics များကို Problems panel တွင် ပြခြင်း |
+| Quick fixes | Missing import၊ unused variable နှင့် syntax-related formatting အတွက် context-aware fix များပေးခြင်း။ Zap output သည် canonical `say` ဖြစ်သောကြောင့် `print` သို့ပြောင်းရန် suggestion မပေးပါ။ |
 | Snippets | function၊ loop၊ condition၊ import၊ `try/catch`၊ `main` နှင့် `raise` snippets များ |
 | Run၊ lint၊ build၊ test | လက်ရှိ file နှင့် Zap workspace အတွက် command များကို Command Palette မှ run ခြင်း |
 
@@ -41,7 +42,7 @@ npm test
 npm run package
 ```
 
-Package ဖိုင်သည် `dist/zap-language-support-0.5.1.vsix` တွင် ထွက်လာပါမည်။ ထိုဖိုင်ကို **Extensions: Install from VSIX...** ဖြင့် install လုပ်ပါ။ Development အတွက် **Developer: Install Extension from Location...** ကို run ပြီး extension directory ကို ရွေးပါ။
+Package ဖိုင်သည် `dist/zap-language-support-0.6.0.vsix` တွင် ထွက်လာပါမည်။ ထိုဖိုင်ကို **Extensions: Install from VSIX...** ဖြင့် install လုပ်ပါ။ Development အတွက် **Developer: Install Extension from Location...** ကို run ပြီး extension directory ကို ရွေးပါ။
 
 ## `.zp` File Icon ပြရန်
 
@@ -82,7 +83,7 @@ else:
     say "Disabled"
 ```
 
-Zap language တွင် `let`၊ typed annotation၊ `fn`၊ `if`/`else`၊ `for`၊ `while`၊ `async`/`await`၊ `spawn`၊ `task_join`၊ `task_is_ready`၊ `class`၊ `module`၊ `import`၊ `try`/`catch`၊ `raise`၊ list၊ map နှင့် Result/Option value များကို အသုံးပြုနိုင်ပါသည်။ အပြည့်အစုံကို [Zap syntax guide](https://github.com/hidecard/zap/blob/main/docs/SYNTAX_GUIDE_MM.md) နှင့် [async LSP guide](https://github.com/hidecard/zap/blob/main/docs/ASYNC_LSP_MM.md) တွင် ဖတ်ရှုနိုင်ပါသည်။
+Zap language တွင် `let`၊ typed annotation၊ `fn`၊ `if`/`else`၊ `for`၊ `while`၊ `async`/`await`၊ `spawn`၊ `task_join`၊ `task_is_ready`၊ `say`၊ `class`၊ `module`၊ `import`၊ `try`/`catch`၊ `raise`၊ list၊ map နှင့် Result/Option value များကို အသုံးပြုနိုင်ပါသည်။ အပြည့်အစုံကို [Zap syntax guide](https://github.com/hidecard/zap/blob/main/docs/SYNTAX_GUIDE_MM.md) နှင့် [async LSP guide](https://github.com/hidecard/zap/blob/main/docs/ASYNC_LSP_MM.md) တွင် ဖတ်ရှုနိုင်ပါသည်။
 
 ## Commands
 

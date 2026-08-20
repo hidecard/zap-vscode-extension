@@ -61,8 +61,8 @@
     },
     "builtins": {
       "patterns": [
-        { "name": "keyword.control.output.zap", "match": "\\b(say|print)\\b" },
-        { "name": "support.function.zap", "match": "\\b(len|type|range|enumerate|zip|map|filter|reduce|now|sleep|url_parse|url_encode|url_decode|http_get|http_request|process_run|has_env|env|path_join|basename|dirname|json_parse|json_stringify|spawn|task_join|task_is_ready)\\b(?=\\s*(?:\\(|$))" }
+        { "name": "keyword.control.output.zap", "match": "\\b(say)\\b" },
+        { "name": "support.function.zap", "match": "\\b(len|type|range|enumerate|zip|map|filter|reduce|now|sleep|has_env|env|path_join|basename|dirname|read_text|write_text|read_lines|write_lines|exists|json|from_json|json_parse|json_stringify|str|upper|lower|trim|split|join|get|contains|is_empty|sort|replace|abs|min|max|pow|sqrt|sum|keys|count|reverse|url_parse|url_encode|url_decode|http_get|http_request|http_serve_once|process_run|assert|ok|err|some|option_none|is_ok|is_err|is_some|unwrap|unwrap_or|spawn|task_join|task_is_ready)\\b(?=\\s*(?:\\(|$))" }
       ]
     },
     "constants": {

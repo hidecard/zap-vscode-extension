@@ -17,13 +17,14 @@ const KEYWORDS = [
 ];
 const TYPES = ['any', 'bool', 'future', 'list', 'map', 'none', 'number', 'option', 'result', 'set', 'text', 'unknown'];
 const BUILTINS = [
-  'say', 'print', 'len', 'type', 'range', 'enumerate', 'zip', 'map', 'filter', 'reduce',
+  'say', 'len', 'type', 'range', 'enumerate', 'zip', 'map', 'filter', 'reduce',
   'now', 'sleep', 'has_env', 'env', 'env_get', 'config_dir', 'config_path',
   'path_join', 'basename', 'dirname', 'read_text', 'write_text', 'read_lines', 'write_lines',
   'json', 'from_json', 'json_parse', 'json_stringify', 'str', 'upper', 'lower', 'trim',
-  'split', 'join', 'contains', 'replace', 'abs', 'min', 'max', 'pow', 'sum', 'keys',
-  'count', 'reverse', 'range', 'url_parse', 'url_encode', 'url_decode', 'http_get',
-  'http_request', 'http_serve_once', 'process_run',
+  'split', 'join', 'get', 'contains', 'is_empty', 'sort', 'replace', 'abs', 'min', 'max', 'pow', 'sqrt', 'sum', 'keys',
+  'count', 'reverse', 'range', 'exists', 'url_parse', 'url_encode', 'url_decode', 'http_get',
+  'http_request', 'http_serve_once', 'process_run', 'assert',
+  'ok', 'err', 'some', 'option_none', 'is_ok', 'is_err', 'is_some', 'unwrap', 'unwrap_or',
   'spawn', 'task_join', 'task_is_ready'
 ];
 
@@ -160,6 +161,68 @@ function formatCurrentFile() {
     .catch(error => vscode.window.showErrorMessage(`Zap formatting failed: ${error.message}`));
 }
 
+function diagnosticMessage(diagnostic) {
+  return String(diagnostic?.message || '').trim();
+}
+
+function quotedDiagnosticName(message) {
+  const match = message.match(/["'`]([^"'`]+)["'`]/);
+  return match ? match[1] : undefined;
+}
+
+function addImportCommand(uriString, suggestedName) {
+  const uri = vscode.Uri.parse(uriString);
+  const document = vscode.workspace.textDocuments.find(item => item.uri.toString() === uri.toString());
+  if (!document) return;
+  return vscode.window.showInputBox({
+    prompt: 'Zap module path to import',
+    value: suggestedName || '',
+    placeHolder: 'app.core'
+  }).then(modulePath => {
+    if (!modulePath) return;
+    const alias = modulePath.split('.').pop();
+    const text = `import ${modulePath} as ${alias}\\n`;
+    const edit = new vscode.WorkspaceEdit();
+    edit.insert(uri, new vscode.Position(0, 0), text);
+    return vscode.workspace.applyEdit(edit);
+  });
+}
+
+function provideCodeActions(document, range, context) {
+  const actions = [];
+  for (const diagnostic of context.diagnostics || []) {
+    const message = diagnosticMessage(diagnostic);
+    const lower = message.toLowerCase();
+    const name = quotedDiagnosticName(message);
+    if (/(unresolved|unknown|cannot find|missing).*(import|module)|(import|module).*(not found|unresolved|missing)/i.test(message)) {
+      const action = new vscode.CodeAction(`Add import for ${name || 'module'}`, vscode.CodeActionKind.QuickFix);
+      action.diagnostics = [diagnostic];
+      action.command = {
+        command: 'zap.addImport',
+        title: 'Add Zap import',
+        arguments: [document.uri.toString(), name]
+      };
+      actions.push(action);
+    }
+    if (lower.includes('unused') && (lower.includes('variable') || lower.includes('binding') || lower.includes('declaration'))) {
+      const line = diagnostic.range.start.line;
+      const lineRange = document.lineAt(line).rangeIncludingLineBreak;
+      const action = new vscode.CodeAction('Remove unused variable', vscode.CodeActionKind.QuickFix);
+      action.diagnostics = [diagnostic];
+      action.edit = new vscode.WorkspaceEdit();
+      action.edit.delete(document.uri, lineRange);
+      actions.push(action);
+    }
+    if (/(syntax|parse|unexpected|expected|invalid).*(error|token|syntax)?/i.test(message)) {
+      const action = new vscode.CodeAction('Format Zap document', vscode.CodeActionKind.Source);
+      action.diagnostics = [diagnostic];
+      action.command = { command: 'editor.action.formatDocument', title: 'Format Zap document' };
+      actions.push(action);
+    }
+  }
+  return actions;
+}
+
 function runWorkspaceCommand(command, args, title) {
   const root = workspaceRoot();
   if (!root) {
@@ -254,6 +317,7 @@ function activate(context) {
   context.subscriptions.push(vscode.commands.registerCommand('zap.lintFile', lintCurrentFile));
   context.subscriptions.push(vscode.commands.registerCommand('zap.buildWorkspace', buildWorkspace));
   context.subscriptions.push(vscode.commands.registerCommand('zap.testWorkspace', testWorkspace));
+  context.subscriptions.push(vscode.commands.registerCommand('zap.addImport', addImportCommand));
   context.subscriptions.push(vscode.commands.registerCommand('zap.restartDiagnostics', () => {
     diagnosticCollection.clear();
     const editor = vscode.window.activeTextEditor;
@@ -262,6 +326,9 @@ function activate(context) {
   context.subscriptions.push(vscode.commands.registerCommand('zap.restartLanguageServer', () => {
     restartLanguageServer(context);
   }));
+  context.subscriptions.push(vscode.languages.registerCodeActionsProvider('zap', {
+    provideCodeActions
+  }, { providedCodeActionKinds: [vscode.CodeActionKind.QuickFix, vscode.CodeActionKind.Source] }));
   context.subscriptions.push(vscode.languages.registerCompletionItemProvider('zap', {
     provideCompletionItems(document, position) {
       if (lspClient && lspClient.started) {

@@ -23,7 +23,11 @@ for (const relative of ['package.json', 'language-configuration.json', 'syntaxes
 const extensionSource = fs.readFileSync(path.join(root, 'extension.js'), 'utf8');
 const lspSource = fs.readFileSync(path.join(root, 'lsp-client.js'), 'utf8');
 const grammar = JSON.parse(fs.readFileSync(path.join(root, 'syntaxes/zap.tmLanguage.json'), 'utf8'));
+const outputPattern = grammar.repository.builtins.patterns[0].match;
 const builtinPattern = grammar.repository.builtins.patterns[1].match;
+if (!outputPattern.includes('say') || outputPattern.includes('print')) {
+  throw new Error('Zap output grammar must expose say without print');
+}
 for (const builtin of ['spawn', 'task_join', 'task_is_ready']) {
   if (!builtinPattern.includes(builtin)) throw new Error(`async builtin is missing from syntax grammar: ${builtin}`);
 }
@@ -38,6 +42,9 @@ if (!extensionSource.includes('textDocument/signatureHelp') || !extensionSource.
 }
 if (!extensionSource.includes('textDocument/formatting') || !extensionSource.includes('registerDocumentFormattingEditProvider')) {
   throw new Error('LSP formatting provider is missing');
+}
+if (!extensionSource.includes('registerCodeActionsProvider') || !extensionSource.includes('Remove unused variable') || !extensionSource.includes('Add import for')) {
+  throw new Error('Zap quick-fix code actions are missing');
 }
 if (!extensionSource.includes('zap.runFile') || !extensionSource.includes('zap.checkWorkspace')) {
   throw new Error('extension commands are not registered');
@@ -54,8 +61,8 @@ for (const command of ['zap.formatFile', 'zap.lintFile', 'zap.buildWorkspace', '
 if (manifest.contributes.configuration.properties['zap.formatOnSave']?.default !== false) {
   throw new Error('formatOnSave must default to false');
 }
-if (manifest.version !== '0.5.1' || manifest.contributes.configuration.properties['zap.lspRequestTimeout']?.default !== 10000) {
-  throw new Error('0.5.1 metadata or LSP timeout setting is missing');
+if (manifest.version !== '0.6.0' || manifest.contributes.configuration.properties['zap.lspRequestTimeout']?.default !== 10000) {
+  throw new Error('0.6.0 metadata or LSP timeout setting is missing');
 }
 if (!extensionSource.includes('onWillSaveTextDocument') || !extensionSource.includes('workspace/symbol')) {
   throw new Error('save formatting or workspace symbol integration is missing');
@@ -65,9 +72,12 @@ if (manifest.icon !== 'icons/zap-logo.png' || !manifest.contributes.iconThemes?.
 }
 const grammarSource = fs.readFileSync(path.join(root, 'syntaxes/zap.tmLanguage.json'), 'utf8');
 if (!grammarSource.includes('support.function.zap') || !grammarSource.includes('keyword.control.output.zap')) {
-  throw new Error('Zap builtin or output-statement highlighting grammar is missing');
+  throw new Error('Zap builtin or canonical say-output highlighting grammar is missing');
 }
-for (const builtin of ['read_text', 'from_json', 'http_serve_once', 'process_run', 'spawn', 'task_join', 'task_is_ready']) {
+if (grammarSource.includes('say|print') || extensionSource.includes("'say', 'print'")) {
+  throw new Error('non-canonical print output syntax must not be advertised');
+}
+for (const builtin of ['read_text', 'from_json', 'http_serve_once', 'process_run', 'assert', 'ok', 'err', 'unwrap_or', 'spawn', 'task_join', 'task_is_ready']) {
   if (!extensionSource.includes(`'${builtin}'`)) throw new Error(`missing stdlib completion: ${builtin}`);
 }
 console.log('Zap VS Code extension validation passed.');
