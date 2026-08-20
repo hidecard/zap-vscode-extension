@@ -1,37 +1,127 @@
 {
+  "Say output": {
+    "prefix": "say",
+    "body": ["say ${1:value}", "${0}"],
+    "description": "Print a value using Zap's canonical say statement"
+  },
+  "Variable declaration": {
+    "prefix": "let",
+    "body": ["let ${1:name}: ${2:any} = ${3:value}", "${0}"],
+    "description": "Create a typed Zap variable"
+  },
+  "Mutable variable": {
+    "prefix": "mut",
+    "body": ["mut ${1:name}: ${2:any} = ${3:value}", "${0}"],
+    "description": "Create a mutable Zap variable"
+  },
   "Function": {
     "prefix": "fn",
     "body": ["fn ${1:name}(${2:args}) -> ${3:none}:", "    ${0:pass}"],
     "description": "Create a Zap function"
+  },
+  "Async function": {
+    "prefix": "asyncfn",
+    "body": ["async fn ${1:name}(${2:args}) -> ${3:Future}:", "    ${0:pass}"],
+    "description": "Create an asynchronous Zap function"
   },
   "If statement": {
     "prefix": "if",
     "body": ["if ${1:condition}:", "    ${0:pass}"],
     "description": "Create an if block"
   },
+  "If else statement": {
+    "prefix": "ifelse",
+    "body": ["if ${1:condition}:", "    ${2:pass}", "else:", "    ${0:pass}"],
+    "description": "Create an if/else block"
+  },
+  "Elif chain": {
+    "prefix": "elif",
+    "body": ["if ${1:first_condition}:", "    ${2:pass}", "elif ${3:second_condition}:", "    ${4:pass}", "else:", "    ${0:pass}"],
+    "description": "Create an if/elif/else chain"
+  },
   "For loop": {
     "prefix": "for",
     "body": ["for ${1:item} in ${2:items}:", "    ${0:pass}"],
-    "description": "Create a for loop"
+    "description": "Create a Zap for loop"
+  },
+  "While loop": {
+    "prefix": "while",
+    "body": ["while ${1:condition}:", "    ${0:pass}"],
+    "description": "Create a Zap while loop"
+  },
+  "Match statement": {
+    "prefix": "match",
+    "body": ["match ${1:value}:", "    case ${2:pattern}:", "        ${0:pass}"],
+    "description": "Create a Zap match/case block"
   },
   "Try catch": {
     "prefix": "try",
     "body": ["try:", "    ${1:pass}", "catch ${2:error}:", "    ${0:say(error)}"],
     "description": "Create a structured error handler"
   },
+  "Raise error": {
+    "prefix": "raise",
+    "body": ["raise ${0:message}"],
+    "description": "Raise a structured Zap error"
+  },
   "Module import": {
     "prefix": "import",
-    "body": ["import ${1:module.zp} as ${2:module}"],
+    "body": ["import ${1:module.zp} as ${2:module}", "${0}"],
     "description": "Import a Zap module"
+  },
+  "Module declaration": {
+    "prefix": "module",
+    "body": ["module ${1:name}", "${0}"],
+    "description": "Create a Zap module declaration"
+  },
+  "Class declaration": {
+    "prefix": "class",
+    "body": ["class ${1:Name}:", "    ${0:pass}"],
+    "description": "Create a Zap class"
+  },
+  "Assert condition": {
+    "prefix": "assert",
+    "body": ["assert ${1:condition}, ${0:message}"],
+    "description": "Add a Zap assertion"
+  },
+  "Result ok": {
+    "prefix": "ok",
+    "body": ["ok(${0:value})"],
+    "description": "Return a successful Zap Result"
+  },
+  "Result error": {
+    "prefix": "err",
+    "body": ["err(${0:error})"],
+    "description": "Return an unsuccessful Zap Result"
+  },
+  "Option some": {
+    "prefix": "some",
+    "body": ["some(${0:value})"],
+    "description": "Create a present Zap Option value"
+  },
+  "Async spawn": {
+    "prefix": "spawn",
+    "body": ["let ${1:task} = spawn(${2:async_call})", "${0}"],
+    "description": "Spawn an asynchronous Zap task"
+  },
+  "Await task": {
+    "prefix": "await",
+    "body": ["let ${1:value} = await ${2:future}", "${0}"],
+    "description": "Await a Zap Future"
+  },
+  "Join task": {
+    "prefix": "taskjoin",
+    "body": ["let ${1:value} = task_join(${2:task})", "${0}"],
+    "description": "Join a spawned Zap task"
+  },
+  "Check task": {
+    "prefix": "taskready",
+    "body": ["if task_is_ready(${1:task}):", "    ${0:say(\"ready\")}"],
+    "description": "Check whether a Zap task is ready"
   },
   "Main entry": {
     "prefix": "main",
     "body": ["fn main() -> none:", "    ${0:say(\"Hello, Zap!\")}"],
-    "description": "Create a main function"
-  },
-  "Raise error": {
-    "prefix": "raise",
-    "body": ["raise ${0:message}"],
-    "description": "Raise a structured error value"
+    "description": "Create a Zap main function"
   }
 }

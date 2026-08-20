@@ -17,8 +17,14 @@
 | Format on save | Save လုပ်ချိန်တွင် Zap file ကို အလိုအလျောက် format လုပ်နိုင်ခြင်း |
 | Diagnostics | Native LSP diagnostics နှင့် `zap check --json` project diagnostics များကို Problems panel တွင် ပြခြင်း |
 | Quick fixes | Missing import၊ unused variable နှင့် syntax-related formatting အတွက် context-aware fix များပေးခြင်း။ Zap output သည် canonical `say` ဖြစ်သောကြောင့် `print` သို့ပြောင်းရန် suggestion မပေးပါ။ |
-| Snippets | function၊ loop၊ condition၊ import၊ `try/catch`၊ `main` နှင့် `raise` snippets များ |
+| Snippets | canonical `say`၊ variable၊ function၊ async function၊ control flow၊ module၊ class၊ error၊ Result/Option၊ async task နှင့် `main` templates များ |
 | Run၊ lint၊ build၊ test | လက်ရှိ file နှင့် Zap workspace အတွက် command များကို Command Palette မှ run ခြင်း |
+
+## Snippets
+
+`.zp` file တစ်ခုဖွင့်ပြီး `say`၊ `fn`၊ `asyncfn`၊ `ifelse`၊ `try`၊ `spawn`၊ `taskjoin`၊ `assert` သို့မဟုတ် `main` ကဲ့သို့ prefix ကို ရိုက်ပြီး **Tab** နှိပ်ပါ၊ သို့မဟုတ် completion item ကို ရွေးပါ။ Template တိုင်းတွင် VS Code tab stop နှင့် placeholder များပါသဖြင့် name၊ type၊ expression နှင့် block body များကို မြန်မြန်ဖြည့်နိုင်ပါသည်။ Output snippet များသည် Zap ၏ canonical `say` statement ကိုသာ အသုံးပြုပါသည်။
+
+Project အလိုက် ကိုယ်ပိုင် snippet ထည့်လိုပါက [`examples/zap-custom.code-snippets`](examples/zap-custom.code-snippets) ကို project ထဲရှိ `.vscode/zap.code-snippets` အဖြစ် copy လုပ်ပါ။ JSON file ကို ပြင်ပြီး project-specific `scope`၊ prefix နှင့် template အသစ်များကို extension source မပြင်ဘဲ ထည့်နိုင်ပါသည်။ Template ထဲတွင် API၊ async worker၊ test နှင့် logging example များ ပါဝင်ပါသည်။
 
 ## လိုအပ်ချက်များ
 

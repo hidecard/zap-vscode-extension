@@ -21,8 +21,14 @@ The extension intentionally does not bundle the Zap compiler or runtime. It uses
 | Format on save | Optionally formats Zap documents when they are saved. |
 | Diagnostics | Displays native LSP diagnostics and project diagnostics from `zap check --json`. |
 | Quick fixes | Offers context-aware fixes for actionable missing imports, unused variables, and syntax-related formatting. Zap output remains canonical `say`; the extension does not suggest converting it to `print`. |
-| Snippets | Includes snippets for functions, loops, conditionals, imports, `try`/`catch`, `main`, and `raise`. |
+| Snippets | Includes canonical `say`, variables, functions, async functions, control flow, modules, classes, errors, Result/Option values, async tasks, and `main` templates. |
 | Run, lint, build, and test | Provides commands for the current file and the current Zap workspace. |
+
+## Snippets
+
+Open a `.zp` file and type a snippet prefix such as `say`, `fn`, `asyncfn`, `ifelse`, `try`, `spawn`, `taskjoin`, `assert`, or `main`, then press **Tab** or choose the completion item. Every template uses VS Code tab stops and placeholders so you can move through names, types, expressions, and block bodies quickly. Output snippets use Zap's canonical `say` statement.
+
+For project-specific templates, copy [`examples/zap-custom.code-snippets`](examples/zap-custom.code-snippets) into your project as `.vscode/zap.code-snippets`. You can then edit the JSON, add a project-specific `scope`, and create new prefixes without modifying the extension. The template includes API, async worker, test, and logging examples.
 
 ## Requirements
 
