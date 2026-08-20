@@ -2,7 +2,7 @@
   "name": "zap-language-support",
   "displayName": "Zap Syntax and LSP",
   "description": "Syntax highlighting, LSP completion, signature help, hover, definitions, formatting, diagnostics, and run support for the Zap programming language.",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "publisher": "ArkarYan",
   "license": "MIT",
   "icon": "icons/zap-logo.png",
