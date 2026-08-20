@@ -15,10 +15,10 @@ class ZapLspClient {
     this.process = cp.spawn(command, ['lsp'], { cwd, windowsHide: true, stdio: ['pipe', 'pipe', 'pipe'] });
     this.process.stdout.on('data', data => this.read(data));
     this.process.stderr.on('data', data => { this.lastStderr = `${this.lastStderr || ''}${data.toString()}`; });
+    this.process.on('error', error => this.fail(error));
     this.process.on('exit', code => {
       this.started = false;
-      for (const pending of this.pending.values()) pending.reject(new Error(`Zap LSP exited with code ${code}`));
-      this.pending.clear();
+      this.fail(new Error(`Zap LSP exited with code ${code}`));
       if (this.onExit) this.onExit(code, this.lastStderr || '');
     });
     this.initialize().catch(() => {});
@@ -79,9 +79,18 @@ class ZapLspClient {
   request(method, params) {
     const id = this.nextId++;
     return new Promise((resolve, reject) => {
+      if (!this.process || this.process.killed || !this.process.stdin.writable) {
+        reject(new Error('Zap LSP is not available'));
+        return;
+      }
       this.pending.set(id, { resolve, reject });
       this.send({ jsonrpc: '2.0', id, method, params });
     });
+  }
+
+  fail(error) {
+    for (const pending of this.pending.values()) pending.reject(error);
+    this.pending.clear();
   }
 
   notify(method, params) {
@@ -103,7 +112,13 @@ class ZapLspClient {
 
   change(document) {
     this.notify('textDocument/didChange', {
-      textDocument: { uri: document.uri.toString(), version: document.version },
+      textDocument: {
+        uri: document.uri.toString(),
+        version: document.version,
+        // zap's native LSP reads the full document text from textDocument.text.
+        // Keep contentChanges as well for standard LSP servers.
+        text: document.getText()
+      },
       contentChanges: [{ text: document.getText() }]
     });
   }
@@ -113,11 +128,20 @@ class ZapLspClient {
   }
 
   stop() {
-    if (this.process && !this.process.killed) {
-      this.notify('shutdown', null);
-      this.notify('exit', null);
-      this.process.kill();
-    }
+    if (!this.process || this.process.killed) return;
+    const process = this.process;
+    const forceStop = setTimeout(() => {
+      if (!process.killed) process.kill();
+    }, 500);
+    this.request('shutdown', null)
+      .catch(() => undefined)
+      .then(() => {
+        clearTimeout(forceStop);
+        if (!process.killed) {
+          this.notify('exit', null);
+          process.kill();
+        }
+      });
   }
 }
 

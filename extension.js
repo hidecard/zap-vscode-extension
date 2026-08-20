@@ -1,5 +1,6 @@
 const vscode = require('vscode');
 const cp = require('child_process');
+const fs = require('fs');
 const path = require('path');
 const { ZapLspClient } = require('./lsp-client');
 
@@ -62,6 +63,11 @@ function refreshDiagnostics(document) {
   const config = vscode.workspace.getConfiguration('zap');
   if (!config.get('enableDiagnostics', true) || document.languageId !== 'zap') return;
   const root = workspaceRoot() || path.dirname(document.uri.fsPath);
+  // `zap check` requires a project manifest. For a standalone .zp file,
+  // let the LSP provide diagnostics instead of showing a misleading manifest error.
+  if (!fs.existsSync(path.join(root, 'zap.toml'))) {
+    return;
+  }
   runCli(['check', '--json', root], root, (error, stdout, stderr) => {
     if (document.isClosed) return;
     const items = parseJsonDiagnostic(stdout, stderr, root)
@@ -113,10 +119,83 @@ function quote(value) {
   return `'${String(value).replace(/'/g, "'\\''")}'`;
 }
 
+function currentZapDocument() {
+  const document = vscode.window.activeTextEditor?.document;
+  if (!document || document.languageId !== 'zap') {
+    vscode.window.showWarningMessage('Open a .zp file before using a Zap command.');
+    return undefined;
+  }
+  return document;
+}
+
+function formatEdits(document) {
+  if (!lspClient || !lspClient.started) return Promise.resolve([]);
+  return lspClient.request('textDocument/formatting', {
+    textDocument: { uri: document.uri.toString() },
+    options: { tabSize: 4, insertSpaces: true }
+  }).then(edits => (edits || []).map(edit => new vscode.TextEdit(
+    new vscode.Range(
+      edit.range.start.line,
+      edit.range.start.character,
+      edit.range.end.line,
+      edit.range.end.character
+    ),
+    edit.newText || ''
+  )));
+}
+
+function formatCurrentFile() {
+  const document = currentZapDocument();
+  if (!document) return;
+  formatEdits(document)
+    .then(edits => {
+      const workspaceEdit = new vscode.WorkspaceEdit();
+      workspaceEdit.set(document.uri, edits);
+      return vscode.workspace.applyEdit(workspaceEdit);
+    })
+    .catch(error => vscode.window.showErrorMessage(`Zap formatting failed: ${error.message}`));
+}
+
+function runWorkspaceCommand(command, args, title) {
+  const root = workspaceRoot();
+  if (!root) {
+    vscode.window.showInformationMessage(`Open a workspace before running Zap: ${title}.`);
+    return;
+  }
+  runCli([command, ...args], root, (error, stdout, stderr) => {
+    const channel = vscode.window.createOutputChannel('Zap');
+    channel.clear();
+    channel.appendLine(`$ ${executable()} ${command} ${args.join(' ')}`);
+    channel.append(stdout || stderr || `Zap ${title} finished.`);
+    channel.show(true);
+    if (error) vscode.window.showErrorMessage(`Zap ${title} failed (exit ${error.code ?? 'unknown'}).`);
+    else vscode.window.showInformationMessage(`Zap ${title} completed.`);
+  });
+}
+
+function lintCurrentFile() {
+  const document = currentZapDocument();
+  if (document) runWorkspaceCommand('lint', [document.uri.fsPath], 'lint');
+}
+
+function buildWorkspace() {
+  const root = workspaceRoot();
+  if (root) runWorkspaceCommand('build', [root], 'build');
+}
+
+function testWorkspace() {
+  const root = workspaceRoot();
+  if (root) runWorkspaceCommand('test', [root], 'test');
+}
+
 function checkWorkspace() {
   const root = workspaceRoot();
   if (!root) {
     vscode.window.showInformationMessage('Open a Zap workspace before checking it.');
+    return;
+  }
+  if (!fs.existsSync(path.join(root, 'zap.toml'))) {
+    vscode.window.showInformationMessage('This folder is not a Zap project yet; create zap.toml before running workspace check.');
     return;
   }
   runCli(['check', '--json', root], root, (error, stdout, stderr) => {
@@ -167,6 +246,10 @@ function activate(context) {
   context.subscriptions.push(diagnosticCollection);
   context.subscriptions.push(vscode.commands.registerCommand('zap.runFile', runCurrentFile));
   context.subscriptions.push(vscode.commands.registerCommand('zap.checkWorkspace', checkWorkspace));
+  context.subscriptions.push(vscode.commands.registerCommand('zap.formatFile', formatCurrentFile));
+  context.subscriptions.push(vscode.commands.registerCommand('zap.lintFile', lintCurrentFile));
+  context.subscriptions.push(vscode.commands.registerCommand('zap.buildWorkspace', buildWorkspace));
+  context.subscriptions.push(vscode.commands.registerCommand('zap.testWorkspace', testWorkspace));
   context.subscriptions.push(vscode.commands.registerCommand('zap.restartDiagnostics', () => {
     diagnosticCollection.clear();
     const editor = vscode.window.activeTextEditor;
@@ -212,20 +295,12 @@ function activate(context) {
   }, '(', ','));
   context.subscriptions.push(vscode.languages.registerDocumentFormattingEditProvider('zap', {
     provideDocumentFormattingEdits(document) {
-      if (!lspClient || !lspClient.started) return [];
-      return lspClient.request('textDocument/formatting', {
-        textDocument: { uri: document.uri.toString() },
-        options: { tabSize: 4, insertSpaces: true }
-      }).then(edits => (edits || []).map(edit => new vscode.TextEdit(
-        new vscode.Range(
-          edit.range.start.line,
-          edit.range.start.character,
-          edit.range.end.line,
-          edit.range.end.character
-        ),
-        edit.newText || ''
-      ))).catch(() => []);
+      return formatEdits(document).catch(() => []);
     }
+  }));
+  context.subscriptions.push(vscode.workspace.onWillSaveTextDocument(event => {
+    if (event.document.languageId !== 'zap' || !vscode.workspace.getConfiguration('zap').get('formatOnSave', false)) return;
+    event.waitUntil(formatEdits(event.document));
   }));
   context.subscriptions.push(vscode.languages.registerHoverProvider('zap', {
     provideHover(document, position) {

@@ -1,0 +1,12 @@
+node_modules/
+scripts/
+*.vsix
+dist/
+.git/
+.gitignore
+package-lock.json
+README_MM.md
+
+# Local/editor files
+.vscode/
+.DS_Store

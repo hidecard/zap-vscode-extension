@@ -5,24 +5,49 @@
   "version": "0.3.0",
   "publisher": "ArkarYan",
   "license": "MIT",
+  "icon": "icons/zap-logo.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hidecard/zap-vscode-extension.git"
+  },
+  "bugs": {
+    "url": "https://github.com/hidecard/zap-vscode-extension/issues"
+  },
   "engines": {
     "vscode": ">=1.85.0"
   },
-  "categories": ["Programming Languages", "Linters"],
-  "keywords": ["zap", "zap-language", "zp", "language-server"],
+  "categories": [
+    "Programming Languages",
+    "Linters"
+  ],
+  "keywords": [
+    "zap",
+    "zap-language",
+    "zp",
+    "language-server"
+  ],
   "activationEvents": [
     "onLanguage:zap",
     "onCommand:zap.runFile",
     "onCommand:zap.checkWorkspace",
-    "onCommand:zap.restartDiagnostics"
+    "onCommand:zap.restartDiagnostics",
+    "onCommand:zap.formatFile",
+    "onCommand:zap.lintFile",
+    "onCommand:zap.buildWorkspace",
+    "onCommand:zap.testWorkspace"
   ],
   "main": "extension.js",
   "contributes": {
     "languages": [
       {
         "id": "zap",
-        "aliases": ["Zap", "zap"],
-        "extensions": [".zp"],
+        "aliases": [
+          "Zap",
+          "zap"
+        ],
+        "extensions": [
+          ".zp"
+        ],
         "configuration": "./language-configuration.json"
       }
     ],
@@ -37,6 +62,13 @@
       {
         "language": "zap",
         "path": "./snippets/zap.json"
+      }
+    ],
+    "iconThemes": [
+      {
+        "id": "zap-file-icon-theme",
+        "label": "Zap File Icons",
+        "path": "./icons/zap-file-icon-theme.json"
       }
     ],
     "commands": [
@@ -54,6 +86,26 @@
         "command": "zap.restartDiagnostics",
         "title": "Zap: Restart Diagnostics",
         "icon": "$(refresh)"
+      },
+      {
+        "command": "zap.formatFile",
+        "title": "Zap: Format Current File",
+        "icon": "$(symbol-misc)"
+      },
+      {
+        "command": "zap.lintFile",
+        "title": "Zap: Lint Current File",
+        "icon": "$(check-all)"
+      },
+      {
+        "command": "zap.buildWorkspace",
+        "title": "Zap: Build Workspace",
+        "icon": "$(tools)"
+      },
+      {
+        "command": "zap.testWorkspace",
+        "title": "Zap: Test Workspace",
+        "icon": "$(beaker)"
       }
     ],
     "menus": {
@@ -80,6 +132,18 @@
         },
         {
           "command": "zap.restartDiagnostics"
+        },
+        {
+          "command": "zap.formatFile"
+        },
+        {
+          "command": "zap.lintFile"
+        },
+        {
+          "command": "zap.buildWorkspace"
+        },
+        {
+          "command": "zap.testWorkspace"
         }
       ]
     },
@@ -112,13 +176,20 @@
           "type": "boolean",
           "default": true,
           "description": "Run Zap files in the integrated terminal instead of an output channel."
+        },
+        "zap.formatOnSave": {
+          "type": "boolean",
+          "default": false,
+          "description": "Run `zap fmt` automatically when saving a Zap file."
         }
       }
     }
   },
   "scripts": {
     "test": "node scripts/test-extension.js",
-    "package": "node scripts/package-extension.js"
+    "package": "vsce package --out dist/$npm_package_name-$npm_package_version.vsix"
+  },
+  "devDependencies": {
+    "@vscode/vsce": "^3.9.2"
   }
 }
-

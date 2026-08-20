@@ -5,27 +5,98 @@
 ## ပါဝင်သောအင်္ဂါရပ်များ
 
 | အင်္ဂါရပ် | ရှင်းလင်းချက် |
-|---|---|
-| `.zp` support | `.zp` file များကို Zap language အဖြစ် အလိုအလျောက်သိရှိခြင်း |
-| Syntax highlighting | keyword၊ function၊ type၊ string၊ number၊ comment နှင့် builtin များကို highlight ပြခြင်း |
-| Autocomplete | Zap LSP မှ workspace-aware symbols များနှင့် keyword၊ type၊ builtin များကို အကြံပြုခြင်း |
-| Signature help | Function call ရေးနေစဉ် parameter label နှင့် လက်ရှိ active argument ကို ပြခြင်း |
-| Formatting | LSP မှတစ်ဆင့် newline ကို normalize လုပ်ခြင်း၊ tab ကို space လေးခုအဖြစ် ပြောင်းခြင်းနှင့် trailing whitespace ဖြုတ်ခြင်း |
-| Hover | function၊ class၊ module၊ import နှင့် binding အချက်အလက်များကို mouse hover ဖြင့် ပြခြင်း |
-| Go to definition | Zap LSP မှ top-level declaration များသို့ သွားရောက်နိုင်ခြင်း |
+| --- | --- |
+| `.zp` language support | `.zp` file များကို Zap source file အဖြစ် မှတ်ပုံတင်ခြင်း |
+| Syntax highlighting | comment၊ string၊ number၊ declaration၊ keyword၊ type၊ constant၊ operator နှင့် `say`/`print` ကဲ့သို့ built-in command များကို highlight ပြခြင်း |
+| Zap File Icons | Explorer ထဲရှိ `.zp` file များအတွက် `Zap File Icons` theme အသုံးပြုနိုင်ခြင်း |
+| LSP completion | Native Zap LSP မှ workspace-aware completion ရယူပြီး LSP မရလျှင် local keyword၊ type နှင့် builtin များဖြင့် fallback လုပ်ခြင်း |
+| Signature help | Function call ရေးနေစဉ် function signature နှင့် လက်ရှိ parameter ကို ပြခြင်း |
+| Hover နှင့် definition | Hover information နှင့် Go to Definition ကို Zap LSP ဖြင့် အသုံးပြုနိုင်ခြင်း |
 | Workspace symbols | VS Code symbol search မှ Zap declaration များကို ရှာဖွေနိုင်ခြင်း |
-| Snippets | function၊ loop၊ condition၊ `try/catch`၊ import၊ `main` နှင့် `raise` snippets များ |
-| Error diagnostics | Zap LSP `publishDiagnostics` နှင့် CLI fallback ရလဒ်များကို Problems panel တွင် ပြခြင်း |
-| Run | လက်ရှိ `.zp` file ကို integrated terminal တွင် `zap run` ဖြင့် run ခြင်း |
-| Workspace check | Zap project တစ်ခုလုံးကို command palette မှ စစ်ဆေးခြင်း |
+| Formatting | **Format Document** နှင့် **Zap: Format Current File** ကို LSP မှတစ်ဆင့် အသုံးပြုနိုင်ခြင်း |
+| Format on save | Save လုပ်ချိန်တွင် Zap file ကို အလိုအလျောက် format လုပ်နိုင်ခြင်း |
+| Diagnostics | Native LSP diagnostics နှင့် `zap check --json` project diagnostics များကို Problems panel တွင် ပြခြင်း |
+| Snippets | function၊ loop၊ condition၊ import၊ `try/catch`၊ `main` နှင့် `raise` snippets များ |
+| Run၊ lint၊ build၊ test | လက်ရှိ file နှင့် Zap workspace အတွက် command များကို Command Palette မှ run ခြင်း |
 
-## အသုံးပြုရန်
+## လိုအပ်ချက်များ
 
-Zap CLI ကို `PATH` ထဲတွင် ထည့်ထားပါ သို့မဟုတ် VS Code Settings တွင် `zap.executable` ကို Zap executable လမ်းကြောင်းအဖြစ် သတ်မှတ်ပါ။ Extension သည် `zap lsp` ကို stdio JSON-RPC server အဖြစ် စတင်ပြီး ဖွင့်ထားသော `.zp` document များကို server နှင့် synchronize လုပ်ပါသည်။ ထို့နောက် `vscode-extension` folder ကို VS Code ဖြင့် ဖွင့်ပြီး **Developer: Install Extension from Location...** ကို ရွေးချယ်ပါ။
+Extension အသုံးပြုရန် VS Code 1.85 သို့မဟုတ် အထက်နှင့် Zap CLI လိုအပ်ပါသည်။ Zap CLI ကို `PATH` ထဲတွင် `zap` အမည်ဖြင့် ထည့်ထားပါ သို့မဟုတ် VS Code Settings တွင် `zap.executable` ကို executable လမ်းကြောင်းအဖြစ် သတ်မှတ်ပါ။ Workspace-level check၊ build နှင့် test command များအတွက် project root ထဲတွင် `zap.toml` ရှိရပါမည်။
+
+Standalone `.zp` file များအတွက် syntax highlighting နှင့် LSP feature များကို ဆက်လက်အသုံးပြုနိုင်ပါသည်။ `zap.toml` မရှိသေးလျှင် project metadata လိုအပ်သော workspace diagnostics များကို မ run ပါ။
+
+## Installation
+
+### VSIX ဖြင့် Install လုပ်ခြင်း
+
+`.vsix` file ကို download လုပ်ပြီး VS Code တွင် **Extensions: Install from VSIX...** ကို run ပါ။ Install ပြီးနောက် language mode သို့မဟုတ် icon မပေါ်သေးလျှင် **Developer: Reload Window** ကို run ပါ။
+
+### Source မှ Build လုပ်ခြင်း
+
+```bash
+git clone https://github.com/hidecard/zap-vscode-extension.git
+cd zap-vscode-extension
+npm ci
+npm test
+npm run package
+```
+
+Package ဖိုင်သည် `dist/zap-language-support-0.3.0.vsix` တွင် ထွက်လာပါမည်။ ထိုဖိုင်ကို **Extensions: Install from VSIX...** ဖြင့် install လုပ်ပါ။ Development အတွက် **Developer: Install Extension from Location...** ကို run ပြီး extension directory ကို ရွေးပါ။
+
+## `.zp` File Icon ပြရန်
+
+Command Palette ကိုဖွင့်ပြီး **Preferences: File Icon Theme** ကို ရွေးကာ **Zap File Icons** ကို ရွေးပါ။ VS Code သည် extension တစ်ခုက user ၏ global file icon theme ကို အလိုအလျောက် အစားထိုးခြင်းကို ခွင့်မပြုသောကြောင့် ဤရွေးချယ်မှုကို ကိုယ်တိုင်လုပ်ရပါသည်။
+
+## Zap Project ပြင်ဆင်ခြင်း
+
+Workspace command များအတွက် workspace root ထဲတွင် `zap.toml` ရှိရပါမည်။ အနည်းဆုံး project manifest ဥပမာမှာ—
+
+```toml
+[package]
+name = "hello-zap"
+version = "0.1.0"
+main = "main.zp"
+```
+
+`main.zp` ဥပမာ—
+
+```zap
+let name: text = "Zap"
+let port: number = 8080
+let enabled: bool = true
+
+say name
+say port
+say enabled
+```
+
+Zap block များသည် indentation ကို အသုံးပြုပါသည်။
+
+```zap
+fn greet(name: text = "World") -> text:
+    return "Hello, " + name
+
+if enabled:
+    say greet(name)
+else:
+    say "Disabled"
+```
+
+Zap language တွင် `let`၊ typed annotation၊ `fn`၊ `if`/`else`၊ `for`၊ `while`၊ `async`/`await`၊ `class`၊ `module`၊ `import`၊ `try`/`catch`၊ `raise`၊ list၊ map နှင့် Result/Option value များကို အသုံးပြုနိုင်ပါသည်။ အပြည့်အစုံကို [Zap syntax guide](https://github.com/hidecard/zap/blob/main/docs/SYNTAX_GUIDE_MM.md) တွင် ဖတ်ရှုနိုင်ပါသည်။
 
 ## Commands
 
-Command Palette မှ **Zap: Run Current File**၊ **Zap: Check Workspace** နှင့် **Zap: Restart Diagnostics** တို့ကို အသုံးပြုနိုင်ပါသည်။ `.zp` editor အတွင်းတွင် play button နှင့် right-click context menu entry ကိုလည်း ထည့်သွင်းထားပါသည်။
+| Command | လုပ်ဆောင်ချက် |
+| --- | --- |
+| **Zap: Run Current File** | Active file ကို `zap run <file>` ဖြင့် run ပါသည်။ |
+| **Zap: Check Workspace** | `zap check --json <workspace>` ဖြင့် စစ်ဆေးပါသည်။ `zap.toml` လိုအပ်ပါသည်။ |
+| **Zap: Restart Diagnostics** | Diagnostics များကို ဖျက်ပြီး ပြန် refresh လုပ်ပါသည်။ |
+| **Zap: Format Current File** | Zap LSP ထံမှ formatting edits ရယူပြီး apply လုပ်ပါသည်။ |
+| **Zap: Lint Current File** | `zap lint <file>` ကို run ပါသည်။ |
+| **Zap: Build Workspace** | `zap build <workspace>` ကို run ပါသည်။ |
+| **Zap: Test Workspace** | `zap test <workspace>` ကို run ပါသည်။ |
+
+`Zap: Run Current File` သည် default အနေဖြင့် integrated terminal ကို အသုံးပြုပါသည်။ Output Channel သို့ ပို့လိုပါက `zap.runInTerminal` ကို `false` သတ်မှတ်ပါ။
 
 ## Settings
 
@@ -35,8 +106,43 @@ Command Palette မှ **Zap: Run Current File**၊ **Zap: Check Workspace** န
   "zap.enableLsp": true,
   "zap.enableDiagnostics": true,
   "zap.diagnosticDelay": 350,
-  "zap.runInTerminal": true
+  "zap.runInTerminal": true,
+  "zap.formatOnSave": false
 }
 ```
 
-LSP client သည် `Content-Length` JSON-RPC framing ကို အသုံးပြုပြီး initialize၊ document open/change/close၊ completion၊ signature help၊ hover၊ definition၊ document formatting၊ workspace symbols နှင့် publish-diagnostics notification များကို ထောက်ပံ့ပါသည်။ Signature help သည် `(` နှင့် `,` ရိုက်ပြီးနောက် အလုပ်လုပ်ပြီး document formatting ကို VS Code ၏ **Format Document** မှ အသုံးပြုနိုင်ပါသည်။ Extension သည် Zap parser ကို သီးခြားပြန်ရေးမထားဘဲ native LSP နှင့် CLI diagnostic boundary များကို အသုံးပြုသောကြောင့် command line နှင့် editor diagnostics များ တူညီစွာ အလုပ်လုပ်ပါသည်။
+| Setting | Default | ဖော်ပြချက် |
+| --- | --- | --- |
+| `zap.executable` | `"zap"` | Zap CLI command သို့မဟုတ် executable လမ်းကြောင်း |
+| `zap.enableLsp` | `true` | Native `zap lsp` stdio server ကို စတင်ခြင်း |
+| `zap.enableDiagnostics` | `true` | `zap check --json` project diagnostics ကို ဖွင့်ခြင်း |
+| `zap.diagnosticDelay` | `350` | Edit ပြီးနောက် diagnostics ပြန်စစ်မည့် debounce delay ကို milliseconds ဖြင့် သတ်မှတ်ခြင်း |
+| `zap.runInTerminal` | `true` | File run output ကို integrated terminal သို့ ပို့ခြင်း |
+| `zap.formatOnSave` | `false` | Zap file save မလုပ်မီ LSP formatting edits များကို apply လုပ်ခြင်း |
+
+## LSP Integration
+
+Extension သည် `zap lsp` ကို stdio JSON-RPC server အဖြစ် စတင်ပြီး ဖွင့်ထားသော၊ ပြောင်းလဲထားသော၊ ပိတ်လိုက်သော `.zp` document များကို server နှင့် synchronize လုပ်ပါသည်။ လက်ရှိအသုံးပြုသည့် capability များမှာ `initialize`၊ `textDocument/didOpen`၊ `didChange`၊ `didClose`၊ `completion`၊ `signatureHelp`၊ `hover`၊ `definition`၊ `formatting`၊ `workspace/symbol` နှင့် `publishDiagnostics` တို့ ဖြစ်ပါသည်။
+
+Native Zap LSP တွင် သက်ဆိုင်ရာ protocol method များ မထည့်သေးသရွေ့ References၊ Symbol Rename၊ Code Actions၊ Semantic Tokens နှင့် Document Symbols များကို extension မှ မဖော်ပြနိုင်သေးပါ။
+
+## Development နှင့် Validation
+
+```bash
+npm ci
+npm test
+npm run package
+```
+
+Validation script သည် package manifest၊ icon theme၊ grammar၊ snippets၊ extension JavaScript နှင့် LSP integration များကို စစ်ဆေးပါသည်။ Packaging script သည် official VS Code extension packager ကို အသုံးပြုပြီး `dist/` အောက်တွင် တကယ့် `.vsix` package ထုတ်ပေးပါသည်။
+
+## Repository Links
+
+- [Zap language repository](https://github.com/hidecard/zap)
+- [Zap VS Code extension repository](https://github.com/hidecard/zap-vscode-extension)
+- [Zap syntax guide](https://github.com/hidecard/zap/blob/main/docs/SYNTAX_GUIDE_MM.md)
+- [Zap LSP implementation](https://github.com/hidecard/zap/blob/main/native/src/lsp.rs)
+
+## License
+
+ဤ extension ကို MIT License ဖြင့် ဖြန့်ဝေပါသည်။ [LICENSE](LICENSE) ကို ကြည့်ပါ။
