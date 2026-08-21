@@ -26,6 +26,10 @@
 
 Project အလိုက် ကိုယ်ပိုင် snippet ထည့်လိုပါက [`examples/zap-custom.code-snippets`](examples/zap-custom.code-snippets) ကို project ထဲရှိ `.vscode/zap.code-snippets` အဖြစ် copy လုပ်ပါ။ JSON file ကို ပြင်ပြီး project-specific `scope`၊ prefix နှင့် template အသစ်များကို extension source မပြင်ဘဲ ထည့်နိုင်ပါသည်။ Template ထဲတွင် API၊ async worker၊ test နှင့် logging example များ ပါဝင်ပါသည်။ Built-in catalog တွင် return/control-flow၊ typed/default-argument function၊ nested function၊ collection၊ JSON၊ filesystem၊ environment၊ HTTP နှင့် Result/Option workflow များလည်း ပါဝင်ပါသည်။
 
+## Stable 1.0.0 release
+
+Version 1.0.0 တွင် native Zap LSP integration၊ canonical `say` syntax၊ built-in snippets အပြည့်အစုံ၊ project custom snippets၊ formatting၊ diagnostics၊ quick fixes၊ workspace commands နှင့် restart/recovery support များကို stable release အဖြစ် စုစည်းထားပါသည်။ Extension ထဲတွင် Zap compiler/runtime မပါဝင်သောကြောင့် ကိုက်ညီသော Zap CLI ကို သီးခြား install လုပ်ရပါမည်။
+
 ## လိုအပ်ချက်များ
 
 Extension အသုံးပြုရန် VS Code 1.85 သို့မဟုတ် အထက်နှင့် Zap CLI လိုအပ်ပါသည်။ Zap CLI ကို `PATH` ထဲတွင် `zap` အမည်ဖြင့် ထည့်ထားပါ သို့မဟုတ် VS Code Settings တွင် `zap.executable` ကို executable လမ်းကြောင်းအဖြစ် သတ်မှတ်ပါ။ Workspace-level check၊ build နှင့် test command များအတွက် project root ထဲတွင် `zap.toml` ရှိရပါမည်။
@@ -48,7 +52,7 @@ npm test
 npm run package
 ```
 
-Package ဖိုင်သည် `dist/zap-language-support-0.6.0.vsix` တွင် ထွက်လာပါမည်။ ထိုဖိုင်ကို **Extensions: Install from VSIX...** ဖြင့် install လုပ်ပါ။ Development အတွက် **Developer: Install Extension from Location...** ကို run ပြီး extension directory ကို ရွေးပါ။
+Stable 1.0.0 package ဖိုင်သည် `dist/zap-language-support-1.0.0.vsix` တွင် ထွက်လာပါမည်။ ထိုဖိုင်ကို **Extensions: Install from VSIX...** ဖြင့် install လုပ်ပါ။ Development အတွက် **Developer: Install Extension from Location...** ကို run ပြီး extension directory ကို ရွေးပါ။
 
 ## `.zp` File Icon ပြရန်
 

@@ -30,6 +30,10 @@ Open a `.zp` file and type a snippet prefix such as `say`, `let`, `fn`, `asyncfn
 
 For project-specific templates, copy [`examples/zap-custom.code-snippets`](examples/zap-custom.code-snippets) into your project as `.vscode/zap.code-snippets`. You can then edit the JSON, add a project-specific `scope`, and create new prefixes without modifying the extension. The template includes API, async worker, test, and logging examples. The built-in catalog also covers return/control-flow statements, typed/default-argument functions, nested functions, collection literals and iteration, JSON, filesystem, environment, HTTP, and Result/Option workflows.
 
+## Stable 1.0.0 release
+
+Version 1.0.0 consolidates the native Zap LSP integration, canonical `say` syntax, expanded built-in snippets, project custom snippets, formatting, diagnostics, quick fixes, workspace commands, and restart/recovery support. The extension does not bundle the Zap compiler or runtime; install the matching Zap CLI separately.
+
 ## Requirements
 
 The extension requires:
@@ -56,7 +60,7 @@ npm test
 npm run package
 ```
 
-The package is written to `dist/zap-language-support-0.6.0.vsix`. Install that file with **Extensions: Install from VSIX...**.
+The stable 1.0.0 package is written to `dist/zap-language-support-1.0.0.vsix`. Install that file with **Extensions: Install from VSIX...**.
 
 For development, use **Developer: Install Extension from Location...** and select the extension directory.
 

@@ -10,6 +10,8 @@ const required = [
   'syntaxes/zap.tmLanguage.json',
   'snippets/zap.json',
   'examples/zap-custom.code-snippets',
+  'CHANGELOG.md',
+  'CHANGELOG_MM.md',
   'icons/zap-logo.png',
   'icons/zap-file-icon.png',
   'icons/zap-file-icon-theme.json'
@@ -76,8 +78,11 @@ for (const command of ['zap.formatFile', 'zap.lintFile', 'zap.buildWorkspace', '
 if (manifest.contributes.configuration.properties['zap.formatOnSave']?.default !== false) {
   throw new Error('formatOnSave must default to false');
 }
-if (manifest.version !== '0.8.0' || manifest.contributes.configuration.properties['zap.lspRequestTimeout']?.default !== 10000) {
-  throw new Error('0.8.0 metadata or LSP timeout setting is missing');
+if (manifest.version !== '1.0.0' || manifest.contributes.configuration.properties['zap.lspRequestTimeout']?.default !== 10000) {
+  throw new Error('1.0.0 metadata or LSP timeout setting is missing');
+}
+if (!fs.readFileSync(path.join(root, 'CHANGELOG.md'), 'utf8').includes('[1.0.0]') || !fs.readFileSync(path.join(root, 'CHANGELOG_MM.md'), 'utf8').includes('[1.0.0]')) {
+  throw new Error('1.0.0 changelog files are missing');
 }
 if (!extensionSource.includes('onWillSaveTextDocument') || !extensionSource.includes('workspace/symbol')) {
   throw new Error('save formatting or workspace symbol integration is missing');
